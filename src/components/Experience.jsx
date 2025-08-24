@@ -1,12 +1,30 @@
-import { Gltf, Grid, OrbitControls } from "@react-three/drei";
+import {
+  Gltf,
+  Grid,
+  OrbitControls,
+  PerspectiveCamera,
+} from "@react-three/drei";
 import { Player } from "./Player";
-import { RigidBody, BallCollider, CuboidCollider } from "@react-three/rapier";
+import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { Playground } from "./Playground";
 
 export const Experience = () => {
   return (
     <>
-      <directionalLight position={[-10, 10, 5]} intensity={0.4} castShadow />
+      <directionalLight
+        position={[-50, 50, 25]}
+        intensity={0.6}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      >
+        <PerspectiveCamera
+          attach={"shadow-camera"}
+          near={55}
+          far={86}
+          fov={80}
+        />
+      </directionalLight>
       <directionalLight position={[10, 10, 5]} intensity={0.2} />
       <OrbitControls />
       <ambientLight intensity={0.5} />

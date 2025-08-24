@@ -1,5 +1,4 @@
 import {
-  Gltf,
   useKeyboardControls,
   PerspectiveCamera,
   RoundedBox,
@@ -9,6 +8,7 @@ import { RigidBody, useRapier, CapsuleCollider } from "@react-three/rapier";
 import { useRef } from "react";
 import { Controls } from "../App";
 import { Vector3, Quaternion, Euler } from "three";
+import { useThree } from "@react-three/fiber";
 
 const MOVE_SPEED = 5;
 const JUMP_IMPULSE = 3;
@@ -110,6 +110,38 @@ export const Player = () => {
     api.setLinvel({ x: 0, y: 0, z: 0 });
   };
 
+  const scene = useThree((state) => state.scene);
+
+  const tmpPos = new Vector3();
+  const tmpDir = new Vector3();
+
+  const teleport = () => {
+    if (!rb.current) return;
+
+    // 1) tomar el mesh de salida
+    const outMesh = scene.getObjectByName("gateLargeWide_teamYellow");
+    if (!outMesh) return;
+
+    // 2) posición mundial del arco
+    outMesh.getWorldPosition(tmpPos);
+
+    // 3) dirección "frente" del arco en mundo
+    // (getWorldDirection devuelve el -Z local del mesh; sirve para empujar hacia adelante)
+    outMesh.getWorldDirection(tmpDir);
+
+    // 4) construir destino:
+    //    - adelantamos 1.2u para no quedar dentro del arco
+    //    - levantamos FOOT + 0.1u para que la base de la cápsula apoye sobre el suelo
+    const forwardOffset = 1.2;
+    tmpPos.add(tmpDir.multiplyScalar(forwardOffset));
+    tmpPos.y += FOOT + 0.1; // FOOT = 0.5 → base queda ~0.6 por encima del mesh
+
+    // 5) aplicar teleport y resetear velocidades
+    rb.current.setTranslation({ x: tmpPos.x, y: tmpPos.y, z: tmpPos.z }, true);
+    rb.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+    rb.current.setAngvel({ x: 0, y: 0, z: 0 }, true);
+  };
+
   return (
     <RigidBody
       ref={rb}
@@ -134,6 +166,9 @@ export const Player = () => {
       onIntersectionEnter={({ other }) => {
         if (other.rigidBodyObject?.name === "space") {
           respawn();
+        }
+        if (other.rigidBodyObject?.name === "gateIn") {
+          teleport();
         }
       }}
     >

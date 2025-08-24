@@ -1,5 +1,5 @@
 import { useGLTF } from "@react-three/drei";
-import { RigidBody, BallCollider } from "@react-three/rapier";
+import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
 
 export function Playground(props) {
@@ -19,6 +19,23 @@ export function Playground(props) {
 
   return (
     <group {...props} dispose={null}>
+      <RigidBody
+        position={[-20.325, -0.249, -28.42]}
+        type="fixed"
+        name="gateIn"
+        sensor
+        colliders={false}
+      >
+        <mesh
+          receiveShadow
+          castShadow
+          name="gateLargeWide_teamBlue"
+          geometry={nodes.gateLargeWide_teamBlue.geometry}
+          material={materials["Blue.020"]}
+          rotation={[0, 1.571, 0]}
+        />
+        <CuboidCollider args={[0.5, 2, 1.5]} position={[-1, 0, 0]} />
+      </RigidBody>
       <RigidBody
         type="kinematicVelocity"
         colliders="trimesh"
@@ -102,15 +119,7 @@ export function Playground(props) {
             material={materials["Metal.050"]}
           />
         </group>
-        <mesh
-          receiveShadow
-          castShadow
-          name="gateLargeWide_teamBlue"
-          geometry={nodes.gateLargeWide_teamBlue.geometry}
-          material={materials["Blue.020"]}
-          position={[-20.325, -0.249, -28.42]}
-          rotation={[0, 1.571, 0]}
-        />
+
         <mesh
           receiveShadow
           castShadow
