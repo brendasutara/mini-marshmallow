@@ -8,7 +8,7 @@ import { Player } from "./Player";
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { Playground } from "./Playground";
 
-export const Experience = () => {
+export const Experience = ({ playerRef }) => {
   return (
     <>
       <directionalLight
@@ -28,7 +28,7 @@ export const Experience = () => {
       <directionalLight position={[10, 10, 5]} intensity={0.2} />
       <OrbitControls />
       <ambientLight intensity={0.5} />
-      <Player />
+      <Player ref={playerRef} />
 
       <Playground />
       <RigidBody
