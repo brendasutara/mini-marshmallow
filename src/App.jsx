@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { useMemo, useRef, useState } from "react";
-import { KeyboardControls } from "@react-three/drei";
+import { KeyboardControls, PerspectiveCamera } from "@react-three/drei";
 import { Experience } from "./components/Experience";
 
 export const Controls = {
@@ -36,6 +36,11 @@ function App() {
     document.activeElement?.blur?.();
   };
 
+  const restartCamera = () => {
+    playerRef.current?.resetCamera?.();
+    document.activeElement?.blur?.();
+  };
+
   return (
     <>
       <KeyboardControls map={map}>
@@ -54,43 +59,77 @@ function App() {
 
       {!won && (
         <>
-          <button
-            onClick={restart}
+          {/* Contenedor de botones arriba */}
+          <div
             style={{
               position: "absolute",
-              width: 100,
               top: 20,
               left: 0,
               right: 0,
               margin: "0 auto",
               zIndex: 10,
-              padding: "10px 16px",
-              border: "none",
-              borderRadius: 9999,
-              background:
-                "linear-gradient(135deg, #ffd6ea 0%, #ffc4e0 40%, #ffb3d6 100%)",
-              color: "#3a2b33",
-              boxShadow: "0 6px 18px rgba(255, 182, 210, 0.45)",
-              fontWeight: 700,
-              letterSpacing: "0.2px",
-              cursor: "pointer",
-              outline: "none",
-              transition: "transform .08s ease, box-shadow .2s ease",
+              display: "flex",
+              justifyContent: "center",
+              gap: 12,
             }}
-            onMouseDownCapture={(e) => e.preventDefault()}
-            onMouseDown={(e) => e.preventDefault()}
-            onMouseUp={(e) =>
-              (e.currentTarget.style.transform = "translateY(0)")
-            }
-            onPointerDown={(e) =>
-              (e.currentTarget.style.transform = "translateY(1px)")
-            }
-            aria-label="Respawn al inicio"
-            title="Respawn ♻️"
           >
-            Reiniciar
-          </button>
+            <button
+              onClick={restartCamera}
+              style={{
+                width: 150,
+                padding: "12px 14px",
+                border: "none",
+                borderRadius: 9999,
+                background: "linear-gradient(135deg,#b7ffd8,#7ff4c0)",
+                color: "rgba(10, 92, 58, 1)",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 10px 26px rgba(127,244,192,.25)",
+                transition: "transform .08s ease, filter .15s ease",
+              }}
+              onMouseDownCapture={(e) => e.preventDefault()}
+              onMouseDown={(e) => e.preventDefault()}
+              onMouseUp={(e) =>
+                (e.currentTarget.style.transform = "translateY(0)")
+              }
+              onPointerDown={(e) =>
+                (e.currentTarget.style.transform = "translateY(1px)")
+              }
+            >
+              Centrar cámara
+            </button>
 
+            <button
+              onClick={restart}
+              style={{
+                width: 150,
+                padding: "10px 16px",
+                border: "none",
+                borderRadius: 9999,
+                background:
+                  "linear-gradient(135deg, #ffd6ea 0%, #ffc4e0 40%, #ffb3d6 100%)",
+                color: "#3a2b33",
+                boxShadow: "0 6px 18px rgba(255, 182, 210, 0.45)",
+                fontWeight: 700,
+                letterSpacing: "0.2px",
+                cursor: "pointer",
+                outline: "none",
+                transition: "transform .08s ease, box-shadow .2s ease",
+              }}
+              onMouseDownCapture={(e) => e.preventDefault()}
+              onMouseDown={(e) => e.preventDefault()}
+              onMouseUp={(e) =>
+                (e.currentTarget.style.transform = "translateY(0)")
+              }
+              onPointerDown={(e) =>
+                (e.currentTarget.style.transform = "translateY(1px)")
+              }
+            >
+              Reiniciar
+            </button>
+          </div>
+
+          {/* Frase abajo */}
           <div
             style={{
               position: "absolute",

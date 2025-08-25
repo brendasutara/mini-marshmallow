@@ -14,7 +14,13 @@ export const Experience = ({ playerRef, onWin, won, confettiKey }) => {
       </directionalLight>
       <directionalLight position={[10, 10, 5]} intensity={0.2} />
       <ambientLight intensity={0.5} />
-      <OrbitControls />
+      <OrbitControls
+        // enableZoom={false}
+        enablePan={false}
+        maxPolarAngle={Math.PI / 2}
+        minDistance={3}
+        maxDistance={20}
+      />
 
       <Player ref={playerRef} controlsEnabled={!won} onWin={onWin} />
       <Playground />

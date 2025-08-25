@@ -7,7 +7,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { RigidBody, useRapier, CapsuleCollider } from "@react-three/rapier";
 import { useRef, useImperativeHandle, forwardRef } from "react";
 import { Controls } from "../App";
-import { Vector3, Quaternion, Euler } from "three";
+import { Vector3, Quaternion, Euler, MathUtils } from "three";
 
 const MOVE_SPEED = 5;
 const JUMP_IMPULSE = 3;
@@ -23,6 +23,10 @@ export const Player = forwardRef(
     const rb = useRef(null);
     const camera = useRef(null);
     const cameraTarget = useRef(new Vector3(0, 0, 0));
+    const camStartRef = useRef(new Vector3());
+    const camTRef = useRef(0);
+    const camResetRef = useRef(false);
+    const camTargetLocal = new Vector3(0, 5, 8);
     const punched = useRef(false);
     const prevJump = useRef(false);
 
@@ -140,7 +144,20 @@ export const Player = forwardRef(
       punched.current = false;
       prevJump.current = false;
     };
-    useImperativeHandle(ref, () => ({ respawn }), []);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        respawn,
+        resetCamera: () => {
+          if (camera.current) {
+            camera.current.position.set(0, 5, 8);
+            camera.current.lookAt(0, 0, 0);
+          }
+        },
+      }),
+      []
+    );
 
     return (
       <RigidBody
