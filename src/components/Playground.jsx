@@ -1,21 +1,91 @@
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, Sparkles } from "@react-three/drei";
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
 import { useEffect, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+
+function EnergyPortal({
+  width = 3,
+  height = 3.2,
+  position = [0, 1.2, 0],
+  rotation = [0, 0, 0],
+  color = "#8bd0ff",
+  intensity = 1.0,
+}) {
+  const mat = useRef();
+
+  useFrame((_, dt) => {
+    if (mat.current) mat.current.uniforms.uTime.value += dt;
+  });
+
+  return (
+    <mesh position={position} rotation={rotation}>
+      <planeGeometry args={[width, height, 64, 64]} />
+      <shaderMaterial
+        ref={mat}
+        transparent
+        depthWrite={false}
+        side={THREE.DoubleSide}
+        blending={THREE.AdditiveBlending}
+        uniforms={{
+          uTime: { value: 0 },
+          uColor: { value: new THREE.Color(color) },
+          uIntensity: { value: intensity },
+        }}
+        vertexShader={
+          /* glsl */ `
+          varying vec2 vUv;
+          varying float vEdge;
+          uniform float uTime;
+
+          void main() {
+            vUv = uv;
+
+            // ondulación suave
+            vec3 pos = position;
+            float w1 = sin((uv.y + uTime*1.2) * 6.0) * 0.06;
+            float w2 = sin((uv.x - uTime*0.9) * 10.0) * 0.04;
+            pos.z += w1 + w2;
+
+            // suavizado "fresnel" 2D
+            float d = distance(uv, vec2(0.5));
+            vEdge = smoothstep(0.45, 0.25, 0.5 - d);
+
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+          }
+        `
+        }
+        fragmentShader={
+          /* glsl */ `
+          varying vec2 vUv;
+          varying float vEdge;
+          uniform vec3 uColor;
+          uniform float uIntensity;
+
+          void main() {
+            float r = length(vUv - 0.5);
+            float center = smoothstep(0.5, 0.0, r);
+            float rim    = smoothstep(0.48, 0.40, r);
+
+            float alpha = clamp(center*0.28 + (1.0-rim)*0.45, 0.0, 1.0);
+            vec3  col   = uColor * (0.8*center + 1.2*(1.0-rim)) * uIntensity;
+
+            gl_FragColor = vec4(col, alpha);
+          }
+        `
+        }
+      />
+    </mesh>
+  );
+}
 
 export function Playground(props) {
   const { nodes, materials } = useGLTF("/models/playground.glb");
   const swiper = useRef(null);
 
   useEffect(() => {
-    swiper.current.setAngvel(
-      {
-        x: 0,
-        y: 1,
-        z: 0,
-      },
-      true
-    );
-  });
+    swiper.current.setAngvel({ x: 0, y: 1, z: 0 }, true);
+  }, []);
 
   return (
     <group {...props} dispose={null}>
@@ -34,8 +104,28 @@ export function Playground(props) {
           material={materials["Blue.020"]}
           rotation={[0, 1.571, 0]}
         />
+
+        <EnergyPortal
+          width={3.7}
+          height={2.5}
+          position={[0, 1.6, 0]}
+          rotation={[0, Math.PI / 2, 0]}
+          color="#8bd0ff"
+          intensity={1.0}
+        />
+
+        <Sparkles
+          position={[-1, 1.2, 0]}
+          scale={[3, 3, 0.3]}
+          size={2}
+          count={28}
+          speed={0.5}
+          color="#bfe9ff"
+        />
+
         <CuboidCollider args={[0.5, 2, 1.5]} position={[-1, 0, 0]} />
       </RigidBody>
+
       <RigidBody
         type="kinematicVelocity"
         colliders="trimesh"
@@ -75,7 +165,8 @@ export function Playground(props) {
           />
         </group>
       </RigidBody>
-      <RigidBody type="fixed" name="ground" colliders="trimesh">
+
+      <RigidBody type="fixed" name="button" colliders="trimesh">
         <group name="button_teamYellow" position={[-39.612, -0.038, -27.712]}>
           <mesh
             receiveShadow
@@ -92,6 +183,19 @@ export function Playground(props) {
             material={materials["Metal.065"]}
           />
         </group>
+      </RigidBody>
+
+      <RigidBody
+        type="fixed"
+        name="win"
+        sensor
+        colliders={false}
+        position={[-39.612, 0.4, -27.712]}
+      >
+        <CuboidCollider args={[0.4, 0.1, 0.4]} />
+      </RigidBody>
+
+      <RigidBody type="fixed" name="ground" colliders="trimesh">
         <group
           name="flag_teamYellow"
           position={[-39.987, -0.145, -25.53]}

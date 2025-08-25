@@ -2,10 +2,25 @@
 
 Proyecto de práctica donde exploro **física 3D** con **React Three Fiber** y **@react-three/rapier**. Es parte de un curso de introducción y agregué un tierno un personaje “marshmallow” kawaii.
 
-## 👀 Captura
+## 👀 Capturas
 
 <p align="center">
-  <img src="./public/assets/Screenshot_2.png" width="720" alt="Vista general del playground" />
+  <img src="./public/assets/Screenshot_0.png" width="1080" alt="Inicio del juego" />
+</p>
+<p align="center">
+  <img src="./public/assets/Screenshot_1.png" width="1080" alt="Vista general del playground" />
+</p>
+<p align="center">
+  <img src="./public/assets/Screenshot_2.png" width="1080" alt="Vista general del playground" />
+</p>
+<p align="center">
+  <img src="./public/assets/Screenshot_3.png" width="1080" alt="A punto de saltar" />
+</p>
+<p align="center">
+  <img src="./public/assets/Screenshot_4.png" width="1080" alt="Vista general del playground" />
+</p>
+<p align="center">
+  <img src="./public/assets/Screenshot_5.png" width="1080" alt="Ganadora" />
 </p>
 
 ## ✨ Features
